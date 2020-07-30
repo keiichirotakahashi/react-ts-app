@@ -8,6 +8,7 @@ type User = {
 
 type UserTableProps = {
   users: User[];
+  deleteUser: (id: number) => void;
 };
 
 const UserTable: React.FC<UserTableProps> = (props) => (
@@ -27,7 +28,12 @@ const UserTable: React.FC<UserTableProps> = (props) => (
             <td>{user.username}</td>
             <td>
               <button className="button muted-button">編集</button>
-              <button className="button muted-button">削除</button>
+              <button
+                onClick={() => props.deleteUser(user.id)}
+                className="button muted-button"
+              >
+                削除
+              </button>
             </td>
           </tr>
         ))

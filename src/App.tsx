@@ -28,6 +28,10 @@ const App: React.FC = () => {
     setUsers([...users, user]);
   };
 
+  const deleteUser: (id: number) => void = (id) => {
+    setUsers(users.filter((user) => user.id !== id));
+  };
+
   return (
     <div className="container">
       <h1>ユーザーCRUDアプリ</h1>
@@ -38,7 +42,7 @@ const App: React.FC = () => {
         </div>
         <div className="flex-large">
           <h2>ユーザー一覧</h2>
-          <UserTable users={users} />
+          <UserTable users={users} deleteUser={deleteUser} />
         </div>
       </div>
     </div>
