@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import UserTable from './tables/UserTable';
 import AddUserForm from './forms/AddUserForm';
+import EditUserForm from './forms/EditUserForm';
 
 const App: React.FC = () => {
   type User = {
-    id: number;
+    id?: number;
     name: string;
     username: string;
   };
@@ -16,19 +17,36 @@ const App: React.FC = () => {
   ];
 
   const [users, setUsers] = useState<User[]>(usersData);
+  const [editing, setEditing] = useState<boolean>(false);
+  const initialFormState: User = { name: '', username: '' };
+  const [currentUser, setCurrentUser] = useState<User>(initialFormState);
 
-  type UserForm = {
-    id: number | null;
-    name: string;
-    username: string;
-  };
-
-  const addUser: (userForm: UserForm) => void = (userForm) => {
+  const addUser: (userForm: User) => void = (userForm) => {
     const user: User = { ...userForm, id: users.length + 1 };
     setUsers([...users, user]);
   };
 
-  const deleteUser: (id: number) => void = (id) => {
+  const editRow: (user: User) => void = (user) => {
+    setEditing(true);
+    setCurrentUser({ id: user.id, name: user.name, username: user.username });
+  };
+
+  const updateUser: (userForm: User, id?: number) => void = (userForm, id) => {
+    setEditing(false);
+    setUsers(
+      users.map((user) =>
+        user.id === id
+          ? {
+              id: userForm.id,
+              name: userForm.name,
+              username: userForm.username,
+            }
+          : user
+      )
+    );
+  };
+
+  const deleteUser: (id?: number) => void = (id) => {
     setUsers(users.filter((user) => user.id !== id));
   };
 
@@ -37,12 +55,25 @@ const App: React.FC = () => {
       <h1>ユーザーCRUDアプリ</h1>
       <div className="flex-row">
         <div className="flex-large">
-          <h2>ユーザーを追加する</h2>
-          <AddUserForm addUser={addUser} />
+          {editing ? (
+            <div>
+              <h2>ユーザーを編集する</h2>
+              <EditUserForm
+                currentUser={currentUser}
+                updateUser={updateUser}
+                setEditing={setEditing}
+              />
+            </div>
+          ) : (
+            <div>
+              <h2>ユーザーを追加する</h2>
+              <AddUserForm addUser={addUser} />
+            </div>
+          )}
         </div>
         <div className="flex-large">
           <h2>ユーザー一覧</h2>
-          <UserTable users={users} deleteUser={deleteUser} />
+          <UserTable users={users} editRow={editRow} deleteUser={deleteUser} />
         </div>
       </div>
     </div>

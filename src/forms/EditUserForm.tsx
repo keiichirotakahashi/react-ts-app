@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 
 type User = {
   id?: number;
@@ -6,13 +6,18 @@ type User = {
   username: string;
 };
 
-type AddUserFormProps = {
-  addUser: (userForm: User) => void;
+type EditUserFormProps = {
+  currentUser: User;
+  updateUser: (userForm: User, id?: number) => void;
+  setEditing: (boolean: boolean) => void;
 };
 
-const AddUserForm: React.FC<AddUserFormProps> = (props) => {
-  const initialFormState: User = { name: '', username: '' };
-  const [userForm, setUserForm] = useState<User>(initialFormState);
+const EditUserForm: React.FC<EditUserFormProps> = (props) => {
+  const [userForm, setUserForm] = useState<User>(props.currentUser);
+
+  useEffect(() => {
+    setUserForm(props.currentUser);
+  }, [props]);
 
   const handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void = (
     event
@@ -25,10 +30,7 @@ const AddUserForm: React.FC<AddUserFormProps> = (props) => {
     <form
       onSubmit={(event: FormEvent) => {
         event.preventDefault();
-        if (!userForm.name || !userForm.username) return;
-
-        props.addUser(userForm);
-        setUserForm(initialFormState);
+        props.updateUser(userForm, userForm.id);
       }}
     >
       <label>名前</label>
@@ -45,9 +47,15 @@ const AddUserForm: React.FC<AddUserFormProps> = (props) => {
         value={userForm.username}
         onChange={handleInputChange}
       />
-      <button>追加</button>
+      <button>更新</button>
+      <button
+        onClick={() => props.setEditing(false)}
+        className="button muted-button"
+      >
+        取り消す
+      </button>
     </form>
   );
 };
 
-export default AddUserForm;
+export default EditUserForm;

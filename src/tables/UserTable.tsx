@@ -1,14 +1,15 @@
 import React from 'react';
 
 type User = {
-  id: number;
+  id?: number;
   name: string;
   username: string;
 };
 
 type UserTableProps = {
   users: User[];
-  deleteUser: (id: number) => void;
+  editRow: (user: User) => void;
+  deleteUser: (id?: number) => void;
 };
 
 const UserTable: React.FC<UserTableProps> = (props) => (
@@ -27,7 +28,12 @@ const UserTable: React.FC<UserTableProps> = (props) => (
             <td>{user.name}</td>
             <td>{user.username}</td>
             <td>
-              <button className="button muted-button">編集</button>
+              <button
+                onClick={() => props.editRow(user)}
+                className="button muted-button"
+              >
+                編集
+              </button>
               <button
                 onClick={() => props.deleteUser(user.id)}
                 className="button muted-button"
